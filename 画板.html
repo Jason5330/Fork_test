@@ -180,6 +180,7 @@
     <button class="btn" data-tool="fill" title="填充"><span class="icon">🪣</span></button>
     <button class="btn" id="cubeBtn" title="立方体（点击即画）"><span class="icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 L21 8 L21 17 L12 22 L3 17 L3 8 Z"></path><path d="M12 3 L12 22"></path><path d="M3 8 L12 13 L21 8"></path><path d="M12 13 L12 22" opacity="0.5"></path></svg></span></button>
     <button class="btn" id="sunBtn" title="太阳（点击即画）"><span class="icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4.5"></circle><line x1="12" y1="2" x2="12" y2="5"></line><line x1="12" y1="19" x2="12" y2="22"></line><line x1="2" y1="12" x2="5" y2="12"></line><line x1="19" y1="12" x2="22" y2="12"></line><line x1="4.9" y1="4.9" x2="6.9" y2="6.9"></line><line x1="17.1" y1="17.1" x2="19.1" y2="19.1"></line><line x1="4.9" y1="19.1" x2="6.9" y2="17.1"></line><line x1="17.1" y1="6.9" x2="19.1" y2="4.9"></line></svg></span></button>
+    <button class="btn" id="moonBtn" title="月亮（点击即画）"><span class="icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"></path></svg></span></button>
   </div>
 
   <!-- 填充模式 -->
@@ -488,6 +489,30 @@
     }
   }
 
+  // ===== 月亮（月牙） =====
+  function drawMoon(c, cx, cy, size) {
+    applyStyle(c);
+    const R = Math.max(20, size / 2);      // 外圆半径
+    const d = R * 0.55;                    // 内圆（缺口）中心偏移距离
+    const r = R * 0.92;                    // 内圆半径
+    const alpha = -Math.PI / 4;            // 缺口朝向：右上（月牙开口朝右上）
+
+    // 两圆交点角度（余弦定理）
+    const theta = Math.acos((d * d + R * R - r * r) / (2 * d * R));  // 相对外圆圆心
+    const phi   = Math.acos((d * d + r * r - R * R) / (2 * d * r));  // 相对内圆圆心
+
+    const ix = cx + Math.cos(alpha) * d;   // 内圆圆心
+    const iy = cy + Math.sin(alpha) * d;
+
+    c.beginPath();
+    // 外圆大弧（月牙外侧轮廓）
+    c.arc(cx, cy, R, alpha + theta, alpha - theta, false);
+    // 内圆弧（月牙内侧缺口）
+    c.arc(ix, iy, r, alpha + Math.PI + phi, alpha + Math.PI - phi, true);
+    c.closePath();
+    state.fillMode ? c.fill() : c.stroke();
+  }
+
   // ===== 点击即画的图章工具 =====
   function stampAt(drawFn) {
     // 在画布中央略带随机偏移地盖章，连点多次不会完全重叠
@@ -499,6 +524,7 @@
   }
   document.getElementById('cubeBtn').addEventListener('click', () => stampAt(drawCube));
   document.getElementById('sunBtn').addEventListener('click', () => stampAt(drawSun));
+  document.getElementById('moonBtn').addEventListener('click', () => stampAt(drawMoon));
 
   // ===== 油漆桶填充 (flood fill) =====
   function floodFill(sx, sy, hex) {
