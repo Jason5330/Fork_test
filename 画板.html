@@ -176,6 +176,10 @@
     <button class="btn" data-tool="triangle" title="三角形"><span class="icon">△</span></button>
     <button class="btn" data-tool="ellipse" title="椭圆"><span class="icon">⬭</span></button>
     <button class="btn" data-tool="arrow" title="箭头"><span class="icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="17" y2="12"></line><polyline points="11 5 18 12 11 19"></polyline></svg></span></button>
+    <button class="btn" data-tool="plus" title="加号"><span class="icon">＋</span></button>
+    <button class="btn" data-tool="minus" title="减号"><span class="icon">－</span></button>
+    <button class="btn" data-tool="multiply" title="乘号"><span class="icon">×</span></button>
+    <button class="btn" data-tool="divide" title="除号"><span class="icon">÷</span></button>
     <button class="btn" data-tool="eraser" title="橡皮"><span class="icon">🧽</span></button>
     <button class="btn" data-tool="fill" title="填充"><span class="icon">🪣</span></button>
     <button class="btn" id="cubeBtn" title="立方体（点击即画）"><span class="icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 L21 8 L21 17 L12 22 L3 17 L3 8 Z"></path><path d="M12 3 L12 22"></path><path d="M3 8 L12 13 L21 8"></path><path d="M12 13 L12 22" opacity="0.5"></path></svg></span></button>
@@ -249,7 +253,8 @@
 
   const TOOL_NAMES = {
     brush: '画笔', line: '直线', rect: '矩形', square: '正方形', circle: '圆形',
-    triangle: '三角形', ellipse: '椭圆', arrow: '箭头', eraser: '橡皮', fill: '填充'
+    triangle: '三角形', ellipse: '椭圆', arrow: '箭头', plus: '加号', minus: '减号',
+    multiply: '乘号', divide: '除号', eraser: '橡皮', fill: '填充'
   };
 
   const PALETTE = [
@@ -403,6 +408,36 @@
         c.lineTo(x1 - head * Math.cos(ang - Math.PI / 6), y1 - head * Math.sin(ang - Math.PI / 6));
         c.lineTo(x1 - head * Math.cos(ang + Math.PI / 6), y1 - head * Math.sin(ang + Math.PI / 6));
         c.closePath(); c.fill();
+        break;
+      }
+      case 'plus':
+      case 'minus':
+      case 'multiply':
+      case 'divide': {
+        const cx = (x0 + x1) / 2;
+        const cy = (y0 + y1) / 2;
+        const halfWidth = Math.abs(x1 - x0) / 2;
+        const halfHeight = Math.abs(y1 - y0) / 2;
+        const half = Math.max(4, Math.min(halfWidth, halfHeight));
+        const dotRadius = Math.max(2, half * 0.12);
+
+        if (tool === 'plus') {
+          c.moveTo(cx - half, cy); c.lineTo(cx + half, cy);
+          c.moveTo(cx, cy - half); c.lineTo(cx, cy + half);
+          c.stroke();
+        } else if (tool === 'minus') {
+          c.moveTo(cx - half, cy); c.lineTo(cx + half, cy);
+          c.stroke();
+        } else if (tool === 'multiply') {
+          c.moveTo(cx - half, cy - half); c.lineTo(cx + half, cy + half);
+          c.moveTo(cx + half, cy - half); c.lineTo(cx - half, cy + half);
+          c.stroke();
+        } else {
+          c.moveTo(cx - half, cy); c.lineTo(cx + half, cy);
+          c.stroke();
+          c.beginPath(); c.arc(cx, cy - half * 0.55, dotRadius, 0, Math.PI * 2); c.fill();
+          c.beginPath(); c.arc(cx, cy + half * 0.55, dotRadius, 0, Math.PI * 2); c.fill();
+        }
         break;
       }
     }
