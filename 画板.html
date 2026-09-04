@@ -180,6 +180,7 @@
     <button class="btn" data-tool="fill" title="填充"><span class="icon">🪣</span></button>
     <button class="btn" id="cubeBtn" title="立方体（点击即画）"><span class="icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 L21 8 L21 17 L12 22 L3 17 L3 8 Z"></path><path d="M12 3 L12 22"></path><path d="M3 8 L12 13 L21 8"></path><path d="M12 13 L12 22" opacity="0.5"></path></svg></span></button>
     <button class="btn" id="sunBtn" title="太阳（点击即画）"><span class="icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4.5"></circle><line x1="12" y1="2" x2="12" y2="5"></line><line x1="12" y1="19" x2="12" y2="22"></line><line x1="2" y1="12" x2="5" y2="12"></line><line x1="19" y1="12" x2="22" y2="12"></line><line x1="4.9" y1="4.9" x2="6.9" y2="6.9"></line><line x1="17.1" y1="17.1" x2="19.1" y2="19.1"></line><line x1="4.9" y1="19.1" x2="6.9" y2="17.1"></line><line x1="17.1" y1="6.9" x2="19.1" y2="4.9"></line></svg></span></button>
+    <button class="btn" id="heartBtn" title="爱心（点击即画）"><span class="icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg></span></button>
   </div>
 
   <!-- 填充模式 -->
@@ -488,6 +489,29 @@
     }
   }
 
+  // ===== 爱心 =====
+  function drawHeart(c, cx, cy, size) {
+    applyStyle(c);
+    const w = Math.max(20, size);     // 爱心宽度
+    const h = w;                       // 爱心高度（与宽相等）
+    const x = cx;
+    const y = cy - h / 2;             // 顶部基准，使图形垂直居中
+    const topCurveHeight = h * 0.3;   // 顶部凹陷高度
+
+    c.beginPath();
+    c.moveTo(x, y + topCurveHeight);  // 顶部中心凹陷点
+    // 左上圆弧：凹陷点 -> 左叶最外点
+    c.bezierCurveTo(x, y, x - w / 2, y, x - w / 2, y + topCurveHeight);
+    // 左侧向下收拢：左叶 -> 底部尖端
+    c.bezierCurveTo(x - w / 2, y + (h + topCurveHeight) / 2, x, y + (h + topCurveHeight) / 2, x, y + h);
+    // 右侧向上：底部尖端 -> 右叶最外点
+    c.bezierCurveTo(x, y + (h + topCurveHeight) / 2, x + w / 2, y + (h + topCurveHeight) / 2, x + w / 2, y + topCurveHeight);
+    // 右上圆弧：右叶 -> 凹陷点（回到起点）
+    c.bezierCurveTo(x + w / 2, y, x, y, x, y + topCurveHeight);
+    c.closePath();
+    state.fillMode ? c.fill() : c.stroke();
+  }
+
   // ===== 点击即画的图章工具 =====
   function stampAt(drawFn) {
     // 在画布中央略带随机偏移地盖章，连点多次不会完全重叠
@@ -499,6 +523,7 @@
   }
   document.getElementById('cubeBtn').addEventListener('click', () => stampAt(drawCube));
   document.getElementById('sunBtn').addEventListener('click', () => stampAt(drawSun));
+  document.getElementById('heartBtn').addEventListener('click', () => stampAt(drawHeart));
 
   // ===== 油漆桶填充 (flood fill) =====
   function floodFill(sx, sy, hex) {
