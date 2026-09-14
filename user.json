@@ -1,0 +1,20 @@
+{
+  "users": [
+    {
+      "username": "Jason",
+      "passwordHash": "8e1d7d56fdcc5933",
+      "role": "admin",
+      "createdAt": 1789379076769
+    },
+    {
+      "username": "Danzel",
+      "passwordHash": "2f258ad95d8c5933",
+      "role": "approved",
+      "appliedAt": 1789379106144,
+      "applicationNote": "danzel123",
+      "reviewedAt": 1789379373434,
+      "reviewedBy": "Jason"
+    }
+  ],
+  "updatedAt": 1789379373435
+}

@@ -1,0 +1,11 @@
+{
+  "users": [
+    {
+      "username": "Jason",
+      "passwordHash": "8e1d7d56fdcc5933",
+      "role": "admin",
+      "createdAt": 1700000000000
+    }
+  ],
+  "updatedAt": 1700000000000
+}
